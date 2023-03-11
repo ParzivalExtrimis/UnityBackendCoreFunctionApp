@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using Azure.Storage.Blobs;
-using Azure;
 using System.Text.RegularExpressions;
 using Azure.Storage.Blobs.Models;
 using Microsoft.Extensions.Configuration;
@@ -40,30 +39,26 @@ namespace UnityBackendCoreFunctionApp.Functions {
             string replacement = "-";
 
             string cleanedContanierName = Regex.Replace(containerName, pattern, replacement);
-            try {
-                //If container exists delete container  [TODO: Call cleaner function before execution]
-                var prematureContainerClient = blobServiceClient.GetBlobContainerClient(cleanedContanierName);
-                clock.Start();
-                while (await prematureContainerClient.ExistsAsync()) {
-                    prematureContainerClient.SetAccessPolicy(PublicAccessType.None);
-                    if (await prematureContainerClient.DeleteIfExistsAsync()) {
-                        log.LogInformation("Premature container existed and was cleaned. Proceeding...");
-                        if (clock.ElapsedMilliseconds > 45000) break;
-                    }
+            //If container exists delete container  [TODO: Call cleaner function before execution]
+            var prematureContainerClient = blobServiceClient.GetBlobContainerClient(cleanedContanierName);
+            clock.Start();
+            while (await prematureContainerClient.ExistsAsync()) {
+                prematureContainerClient.SetAccessPolicy(PublicAccessType.None);
+                if (await prematureContainerClient.DeleteIfExistsAsync()) {
+                    log.LogInformation("Premature container existed and was cleaned. Proceeding...");
+                    if (clock.ElapsedMilliseconds > 45000) break;
                 }
-                // Create the container
-                BlobContainerClient container = await blobServiceClient.CreateBlobContainerAsync(cleanedContanierName);
+            }
+            // Create the container
+            BlobContainerClient container = await blobServiceClient.CreateBlobContainerAsync(cleanedContanierName);
 
-                if (await container.ExistsAsync()) {
-                    log.LogInformation($"Created container {container.Name}");
-                    return container;
-                }
+            if (await container.ExistsAsync()) {
+                log.LogInformation($"Created container {container.Name}");
+                return container;
             }
-            catch (RequestFailedException e) {
-                log.LogError($"StorageInit: HTTP error code {e.Status}: {e.ErrorCode}");
-                log.LogError(e.Message);
+            else {
+                return null;
             }
-            return null;
         }
     }
 }
