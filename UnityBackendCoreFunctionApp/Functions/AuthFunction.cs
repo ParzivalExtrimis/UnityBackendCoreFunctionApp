@@ -17,7 +17,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
 
         [FunctionName("Auth")]
         public static async Task<User> Auth([ActivityTrigger] string loginData, ILogger log) {
-            log.LogInformation($"Trying to Authenticate");
+            log.LogWarning($"Trying to Authenticate");
 
             var loginInfo = JsonConvert.DeserializeObject<Login>(loginData);
             var name = loginInfo.Username;
@@ -33,7 +33,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
 
             var response = await httpClient.PostAsync(baseURL + "token", requestContent);
             if (!response.IsSuccessStatusCode) {
-                log.LogInformation($"Authentication failed: {response.Content}");
+                log.LogWarning($"Authentication failed: {response.Content}");
                 return null;
             }
             var outputJson = await response.Content.ReadAsStringAsync();
@@ -52,7 +52,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
             string jsonUserData;
             if (getInfoResponseMessage.IsSuccessStatusCode) {
                 string getInfoResponseContent = await getInfoResponseMessage.Content.ReadAsStringAsync();
-                log.LogInformation($"Get info response: {getInfoResponseContent}");
+                log.LogWarning($"Get info response: {getInfoResponseContent.Substring(0, 30)}");
                 jsonUserData = getInfoResponseContent;
             }
             else {

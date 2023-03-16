@@ -8,23 +8,21 @@ using UnityBackendCoreFunctionApp.Models;
 using Microsoft.Azure.Cosmos;
 using User = UnityBackendCoreFunctionApp.Models.User;
 using Microsoft.Extensions.Configuration;
+using Azure.Identity;
 
 namespace UnityBackendCoreFunctionApp.Functions;
 public static class ContentMatcherFunction {
     [FunctionName("ContentMatcher")]
-    public static async Task<List<string>> ContentMatcher(
+    public static async Task<ContentData> ContentMatcher(
         [ActivityTrigger] User user,
         ILogger log) {
 
-        log.LogInformation($"Content matching executed at: {DateTime.Now}");
+        log.LogWarning($"Content matching executed at: {DateTime.Now}");
 
-        var builder = new ConfigurationBuilder()
-               .SetBasePath(Environment.CurrentDirectory)
-               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
-        var config = builder.Build();
-        var connectionString = config.GetConnectionString("CosmosDBConnection");
-
-        using CosmosClient client = new(connectionString);
+        //connects to Storage Account via Managed Identity
+        var client = new CosmosClient(
+            "https://content-catalog.documents.azure.com/",
+            new DefaultAzureCredential());
 
         Database database = client.GetDatabase(id: "Catalog");
         Container container = database.GetContainer(id: "BatchContent");
@@ -45,15 +43,18 @@ public static class ContentMatcherFunction {
         using FeedIterator<ContentData> feed = container.GetItemQueryIterator<ContentData>(
             queryDefinition: query
         );
-        log.LogInformation($"query : {query.QueryText}");
+  
+        var result = new SynchronizedInitAndMatchResult();
         while (feed.HasMoreResults) {
             FeedResponse<ContentData> response = await feed.ReadNextAsync();
             foreach (ContentData contentData in response) {
-                log.LogInformation($"Found item:\t{contentData.batch}");
-                if (contentData == null) {
-                    continue;
+                if (contentData != null) {
+                    log.LogWarning($"Found content for batch: {contentData.batch}, school: {contentData.school}");
+
+                    string resString = string.Join(", ", contentData.content ?? new List<string>());
+                    log.LogWarning($"Content List : {resString}");
+                    return contentData;
                 }
-                return contentData.content;
             }
         }
         return null;
