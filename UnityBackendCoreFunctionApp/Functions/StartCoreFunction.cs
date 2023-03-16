@@ -20,7 +20,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
             // Function input comes from the request content.
             string instanceId = await starter.StartNewAsync("Core", null, jsonContent);
 
-            log.LogInformation($"Started orchestration with ID = '{instanceId}'.");
+            log.LogWarning($"Started orchestration with ID = '{instanceId}'.");
 
             return starter.CreateCheckStatusResponse(req, instanceId);
         }
