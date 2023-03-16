@@ -20,13 +20,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
            ILogger log) {
             log.LogWarning($"Storage Init executed at: {DateTime.Now}");
 
-            //var builder = new ConfigurationBuilder()
-            //    .SetBasePath(Environment.CurrentDirectory)
-            //    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
-            //var config = builder.Build();
-            //var connectionString = config.GetConnectionString("CloudStorageAccount");
-            //BlobServiceClient blobServiceClient = new BlobServiceClient(connectionString);
-
+            //connects to Storage Account via Managed Identity
             BlobServiceClient blobServiceClient = new BlobServiceClient(
                 new Uri("https://unityaddressablestorage.blob.core.windows.net/"),
                 new DefaultAzureCredential());
