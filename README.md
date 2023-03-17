@@ -93,6 +93,7 @@ The only problem here is that the pipeline endpoint that is required to read fro
 
 ### Also checkout other companion projects that expand on the capabilities of this app. 
 
-* [Creator Utility Scripts](https://github.com/ParzivalExtrimis/Utility-Creator-Scripts)
-Note that this project is still in development and is subject to changes. Checkback here to see many drastic changes and improvements coming soon. 
+* [Creator Utility Scripts](https://gitfront.io/r/Aryan-Hegde/Lxuj5uwcdCgx/Utility-Creator-Scripts/)
+
+### Note that this project is still in development and is subject to changes. Checkback here to see many drastic changes and improvements coming soon. 
 
