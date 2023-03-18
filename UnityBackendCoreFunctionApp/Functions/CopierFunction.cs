@@ -36,11 +36,22 @@ namespace UnityBackendCoreFunctionApp.Functions {
                 log.LogWarning($"Container Cient: {input.container} - ContentList is null or empty.");
                 return false;
             }
+            BlobServiceClient blobServiceClient;
 
+#if DEBUG
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(Environment.CurrentDirectory)
+               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+            var config = builder.Build();
+            var connectionString = config.GetConnectionString("CloudStorageAccount");
+            blobServiceClient = new BlobServiceClient(connectionString);
+
+#else
             //connects to Storage Account via Managed Identity
-            BlobServiceClient blobServiceClient = new BlobServiceClient(
-               new Uri("https://unityaddressablestorage.blob.core.windows.net/"),
-               new DefaultAzureCredential());
+            blobServiceClient = new BlobServiceClient(
+                new Uri("https://unityaddressablestorage.blob.core.windows.net/"),
+                new DefaultAzureCredential());
+#endif
 
             var storageClient = blobServiceClient.GetBlobContainerClient("content-storage-blob");
 

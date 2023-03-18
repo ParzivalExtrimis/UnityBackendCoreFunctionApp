@@ -9,6 +9,7 @@ using Microsoft.Azure.Cosmos;
 using User = UnityBackendCoreFunctionApp.Models.User;
 using Microsoft.Extensions.Configuration;
 using Azure.Identity;
+using Azure.Storage.Blobs;
 
 namespace UnityBackendCoreFunctionApp.Functions;
 public static class ContentMatcherFunction {
@@ -19,10 +20,21 @@ public static class ContentMatcherFunction {
 
         log.LogWarning($"Content matching executed at: {DateTime.Now}");
 
-        //connects to Storage Account via Managed Identity
-        var client = new CosmosClient(
-            "https://content-catalog.documents.azure.com/",
-            new DefaultAzureCredential());
+        CosmosClient client;
+#if DEBUG
+        var builder = new ConfigurationBuilder()
+           .SetBasePath(Environment.CurrentDirectory)
+           .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+        var config = builder.Build();
+        var connectionString = config.GetConnectionString("CosmosDBConnection");
+        client = new CosmosClient(connectionString);
+
+#else
+            //connects to Storage Account via Managed Identity
+            client = new CosmosClient(
+                "https://content-catalog.documents.azure.com/",
+                new DefaultAzureCredential());
+#endif
 
         Database database = client.GetDatabase(id: "Catalog");
         Container container = database.GetContainer(id: "BatchContent");

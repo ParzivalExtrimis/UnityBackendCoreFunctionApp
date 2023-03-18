@@ -20,10 +20,22 @@ namespace UnityBackendCoreFunctionApp.Functions {
            ILogger log) {
             log.LogWarning($"Storage Init executed at: {DateTime.Now}");
 
+            BlobServiceClient blobServiceClient;
+
+#if DEBUG
+            var builder = new ConfigurationBuilder()
+               .SetBasePath(Environment.CurrentDirectory)
+               .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+            var config = builder.Build();
+            var connectionString = config.GetConnectionString("CloudStorageAccount");
+            blobServiceClient = new BlobServiceClient(connectionString);
+
+#else
             //connects to Storage Account via Managed Identity
-            BlobServiceClient blobServiceClient = new BlobServiceClient(
+            blobServiceClient = new BlobServiceClient(
                 new Uri("https://unityaddressablestorage.blob.core.windows.net/"),
                 new DefaultAzureCredential());
+#endif
 
             var containerClient = await CreateContainerAsync(blobServiceClient, username, log);
          
@@ -35,34 +47,33 @@ namespace UnityBackendCoreFunctionApp.Functions {
 
         private static async Task<BlobContainerClient> CreateContainerAsync(BlobServiceClient blobServiceClient, string containerName, ILogger log) {
 
-            var clock = new Stopwatch();
             string pattern = @"[^a-zA-Z0-9]+";
             string replacement = "-";
 
             string cleanedContanierName = Regex.Replace(containerName, pattern, replacement);
-            ////If container exists delete container  [TODO: Call cleaner function before execution]
-            //var prematureContainerClient = blobServiceClient.GetBlobContainerClient(cleanedContanierName);
-            //clock.Start();
-            //while (await prematureContainerClient.ExistsAsync()) {
-            //    prematureContainerClient.SetAccessPolicy(PublicAccessType.None);
-            //    if (await prematureContainerClient.DeleteIfExistsAsync()) {
-            //        log.LogWarning("Premature container existed and was cleaned. Proceeding...");
-            //        if (clock.ElapsedMilliseconds > 45000) break;
-            //    }
-            //}
-
-            cleanedContanierName = "con-" + new Random().Next() + "-" + new Random().Next();
-
-            // Create the container
-            BlobContainerClient container = await blobServiceClient.CreateBlobContainerAsync(cleanedContanierName);
-
-            if (await container.ExistsAsync()) {
-                log.LogWarning($"***************************************************************** \n Created container {container.Name} \n *****************************************************************");
-                return container;
+            //If container exists delete container  [TODO: Call cleaner function before execution]
+            var prematureContainerClient = blobServiceClient.GetBlobContainerClient(cleanedContanierName);
+           
+            try {
+                if (await prematureContainerClient.ExistsAsync()) {
+                    foreach (var blob in prematureContainerClient.GetBlobs()) {
+                        await prematureContainerClient.DeleteBlobIfExistsAsync(blob.Name, new DeleteSnapshotsOption());
+                    }
+                    return prematureContainerClient;
+                }
+                else {
+                    // Create the container
+                    BlobContainerClient container = await blobServiceClient.CreateBlobContainerAsync(cleanedContanierName);
+                    if (await container.ExistsAsync()) {
+                        log.LogWarning($"***************************************************************** \n Created container {container.Name} \n *****************************************************************");
+                        return container;
+                    }
+                }
             }
-            else {
-                return null;
+            catch(Exception E) {
+                log.LogError(E.Message);
             }
+            return null;
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Schema;
 using UnityBackendCoreFunctionApp.Models;
 using static System.Reflection.Metadata.BlobBuilder;
 
@@ -29,9 +30,13 @@ public static class CoreFunction {
         log.LogWarning($"Core: Authenticated -- {userData.Email}");
 
         try {
-
+            Result result = new Result();
             var storageInitResult = await context.CallActivityWithRetryAsync<string>("StorageInit", retryOptions, userData.Email);
             var contentMatchResult = await context.CallActivityAsync<ContentData>("ContentMatcher", userData);
+
+            result.location = storageInitResult;
+            result.data = contentMatchResult;
+
             if (userData != null) {
                 var init_match_results = new List<Task<bool>> {
                     storageInitResult != null
@@ -44,17 +49,21 @@ public static class CoreFunction {
                 };
 
                 var results = await Task.WhenAll(init_match_results);
-                bool result = results.All(b => b);
+                bool isSuccess = results.All(b => b);
                    
-                if (result) {
+                if (isSuccess) {
                     var copierInput = new CopierInput(storageInitResult, contentMatchResult);
                     if (await context.CallActivityAsync<bool>("Copier", copierInput)) {
-                        return new OkObjectResult("Copy successful");
+                        result.state = "Copy Successful";
                     }
-                    return new NotFoundObjectResult("Copy Failed.");
+                    else {
+                        result.state = "Copy Failed";
+                    }
                 }
+                log.LogWarning($"Core Executed Successfully -- ({userData.Email})");
+                return new OkObjectResult(result);
             }
-            return new BadRequestObjectResult($"{userData.UserName} could not be authenticated or Storage Initialization failed.");
+            return new BadRequestObjectResult($"User could not be authenticated.");
         }
         catch (Exception ex) {
             log.LogError(ex.Message);
