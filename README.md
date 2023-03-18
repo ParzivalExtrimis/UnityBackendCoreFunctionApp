@@ -87,7 +87,16 @@ Make sure to set Content-type to application/json in your headers
 
 The only problem here is that the pipeline endpoint that is required to read from the user's temp container where the content is stored during the session is still in development. You will be able test it soon as it goes into release.
 
+## Output
 
+The request you made should return the state manager for the process, something like this
+
+![functionsOutput](https://user-images.githubusercontent.com/72618565/226097042-e0762902-b8d6-4e0d-81c3-d25caf339c0f.png)
+
+If you made all the connections perfectly then following the statusQueryUrl. Should give you this when completed. If it is still proessing it 
+return a status "runnning". Else, you will probably see the output field with an error thrown.
+
+![finaloutputfunctions](https://user-images.githubusercontent.com/72618565/226097094-e824029b-f2c1-4a9b-978b-21d4a93d9feb.png)
 
 ## 🔗 Links
 
