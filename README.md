@@ -1,9 +1,36 @@
 
 # UnityBackendCoreFunctionApp
 
-A powerful and robust solution to manage users, institutions and provide a scalable and balanced storage pipeline. Allowing for the ease of having an out-of-the-box backend for large streamable files that need to delievered with minimized load on the host machine. Also provides state management for processes, as well as for active users.
+A powerful and robust solution to manage users, institutions and provide a scalable and balanced storage pipeline powered by Azure. Allowing for the ease of having an out-of-the-box backend for large streamable files that need to delievered with minimized load on the host machine. Also provides state management for processes, as well as for active users.
 
+Note: The Authentication API written in ASP.NET will be replaced with a newer API based on .NET Core with improved efficiency and chnages to identity models based on the newer requirements. Thus the registration endpoint does exist but impractical to use as of now until the newer API is online and a way for the institutional control to enable content for any user has also been setup. Hence, you can use the prexisting users for now. From the example below.
 
+### [Optional]
+
+   If you however, still want to use the older depricated version. You can use this endpoint for [registrations](https://unitybackend20230212174016.azurewebsites.net/Help/Api/POST-api-Account-Register) But you would have to manually the item to your content catalog ( Your cosmos db environment ) which should be in a format that looks somthing like this,
+    
+```json
+{
+    "id": "wevrf322v5",
+    "batch": "10A",
+    "grade": "10",
+    "school": "HBO",
+    "subjects": [
+        "Math"
+    ],
+    "chapters": [
+        "Shapes1"
+    ],
+    "content": [
+        "spherescene-Android"
+    ],
+    "_rid": "zJt7AJNWzt0DAAAAAAAAAA==",
+    "_self": "dbs/zJt7AA==/colls/zJt7AJNWzt0=/docs/zJt7AJNWzt0DAAAAAAAAAA==/",
+    "_etag": "\"0200ab26-0000-2000-0000-640f4ebd0000\"",
+    "_attachments": "attachments/",
+    "_ts": 1678724797
+}
+```
 
 ## Getting Started
 
@@ -11,6 +38,8 @@ There are two main branches that are designed for testing on typical dev environ
 
 Note: If you do not have an Azure account then you can use  [Azurite with an HTTPS endpoint](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio#authorization-for-tools-and-sdks) to emulate
 a storage account and a [CosmosDB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21) as an alternative. 
+    If you want to use connection strings use the method below or if you want to use managed identities you can follow [this tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial) to set that up for yourself. For developmenet purposes I would suggest
+using connection strings ( The master branch by default supports managed identities, you can switch to [this branch](https://github.com/ParzivalExtrimis/UnityBackendCoreFunctionApp/tree/connection-string-version) )
 
     Azure Development environment: Here it is assumed that you have access
         to an Azure account along with a storage account and a cosmos DB account
@@ -20,11 +49,7 @@ a storage account and a [CosmosDB Emulator](https://learn.microsoft.com/en-us/az
 
             1. Clone the project into Visual Studio ( the simplest way as there is
                a .sln file included )
-            2. If you want to use connection strings use the method below or if
-               you want to use managed identities you can follow this [tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial)
-               to set that up for yourself. For developmenet purposes I would suggest
-               using connection strings, by moving onto step 3
-            3. Add a local.settings.json file to the root project directory which 
+            2. Add a local.settings.json file to the root project directory which 
                 should look something like this:
 
 ```json
@@ -41,12 +66,12 @@ a storage account and a [CosmosDB Emulator](https://learn.microsoft.com/en-us/az
             }
         }
  ```
-           4. Replace the above slots with your own connection strings and your good to 
+           3. Replace the above slots with your own connection strings and your good to 
               go. Just make sure to tun dotnet restore on the project to resolve dependencies.
               Build and run.
-           5. You should have a console output with a link to a locally hosted endpoint to
+           4. You should have a console output with a link to a locally hosted endpoint to
               initiate the process.  
-           6. Send a post request to the link with a json body attatched like in the
+           5. Send a post request to the link with a json body attatched like in the
               example below
 
 
@@ -68,6 +93,7 @@ The only problem here is that the pipeline endpoint that is required to read fro
 
 ### Also checkout other companion projects that expand on the capabilities of this app. 
 
-* [Creator Utility Scripts](https://github.com/ParzivalExtrimis/Utility-Creator-Scripts)
-Note that this project is still in development and is subject to changes. Checkback here to see many drastic changes and improvements coming soon. 
+* [Creator Utility Scripts](https://gitfront.io/r/Aryan-Hegde/Lxuj5uwcdCgx/Utility-Creator-Scripts/)
+
+### Note that this project is still in development and is subject to changes. Checkback here to see many drastic changes and improvements coming soon. 
 
