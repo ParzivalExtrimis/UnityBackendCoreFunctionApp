@@ -39,7 +39,7 @@ There are two main branches that are designed for testing on typical dev environ
 Note: If you do not have an Azure account then you can use  [Azurite with an HTTPS endpoint](https://learn.microsoft.com/en-us/azure/storage/common/storage-use-azurite?tabs=visual-studio#authorization-for-tools-and-sdks) to emulate
 a storage account and a [CosmosDB Emulator](https://learn.microsoft.com/en-us/azure/cosmos-db/local-emulator?tabs=ssl-netstd21) as an alternative. 
     If you want to use connection strings use the method below or if you want to use managed identities you can follow [this tutorial](https://learn.microsoft.com/en-us/azure/azure-functions/functions-identity-based-connections-tutorial) to set that up for yourself. For developmenet purposes I would suggest
-using connection strings ( The master branch by default supports managed identities, you can switch to [this branch](https://github.com/ParzivalExtrimis/UnityBackendCoreFunctionApp/tree/connection-string-version) )
+using connection strings.
 
     Azure Development environment: Here it is assumed that you have access
         to an Azure account along with a storage account and a cosmos DB account
@@ -87,7 +87,16 @@ Make sure to set Content-type to application/json in your headers
 
 The only problem here is that the pipeline endpoint that is required to read from the user's temp container where the content is stored during the session is still in development. You will be able test it soon as it goes into release.
 
+## Output
 
+The request you made should return the state manager for the process, something like this
+
+![functionsOutput](https://user-images.githubusercontent.com/72618565/226097042-e0762902-b8d6-4e0d-81c3-d25caf339c0f.png)
+
+If you made all the connections perfectly then following the statusQueryUrl. Should give you this when completed. If it is still proessing it 
+return a status "runnning". Else, you will probably see the output field with an error thrown.
+
+![finaloutputfunctions](https://user-images.githubusercontent.com/72618565/226097094-e824029b-f2c1-4a9b-978b-21d4a93d9feb.png)
 
 ## 🔗 Links
 
