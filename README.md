@@ -103,6 +103,7 @@ return a status "runnning". Else, you will probably see the output field with an
 ### Also checkout other companion projects that expand on the capabilities of this app. 
 
 * [Creator Utility Scripts](https://gitfront.io/r/Aryan-Hegde/Lxuj5uwcdCgx/Utility-Creator-Scripts/)
+* [Unity Test Client Module](https://gitfront.io/r/Aryan-Hegde/tAx6fivuFHp6/Pancake-Architecture/)
 
 ### Note that this project is still in development and is subject to changes. Checkback here to see many drastic changes and improvements coming soon. 
 
