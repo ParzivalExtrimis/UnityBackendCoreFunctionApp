@@ -33,11 +33,11 @@ namespace UnityBackendCoreFunctionApp.Functions {
 #else
             //connects to Storage Account via Managed Identity
             blobServiceClient = new BlobServiceClient(
-                new Uri("https://unityaddressablestorage.blob.core.windows.net/"),
+                new Uri("https://pancakestorageaccount.blob.core.windows.net/"),
                 new DefaultAzureCredential());
 #endif
 
-            var containerClient = await CreateContainerAsync(blobServiceClient, username, log);
+            var containerClient = await CreateContainerAsync(blobServiceClient, username.ToLower(), log);
          
             if(containerClient != null) {
                 return containerClient.Name;

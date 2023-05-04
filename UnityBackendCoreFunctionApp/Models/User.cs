@@ -4,27 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace UnityBackendCoreFunctionApp.Models {
     public class User {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Grade { get; set; }
-        public string School { get; set; }
-        public string Email { get; set; }
-        public bool EmailConfirmed { get; set; }
-        public string PasswordHash { get; set; }
-        public string SecurityStamp { get; set; }
-        public string PhoneNumber { get; set; }
-        public bool PhoneNumberConfirmed { get; set; }
-        public bool TwoFactorEnabled { get; set; }
-        public DateTime? LockoutEndDateUtc { get; set; }
-        public bool LockoutEnabled { get; set; }
-        public int AccessFailedCount { get; set; }
-        public List<string> Roles { get; set; }
-        public List<string> Claims { get; set; }
-        public List<string> Logins { get; set; }
-        public string Id { get; set; }
-        public string UserName { get; set; }
+        public string StudentUID { get; set; } = null!;
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? ProfilePicture { get; set; }
+        public string Name { get; set; } = null!;
+        public string Password { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
+        public string CityOfOrigin { get; set; } = null!;
+        public string StateOfOrigin { get; set; } = null!;
+        public string CountryOfOrigin { get; set; } = null!;
+        public string Nationality { get; set; } = null!;
+        public string Department { get; set; } = null!;
+        public string School { get; set; } = null!;
     }
 
 }

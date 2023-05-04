@@ -10,44 +10,36 @@ using UnityBackendCoreFunctionApp.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
 
+#nullable enable
+
 namespace UnityBackendCoreFunctionApp.Functions {
     public static class AuthFunction {
 
-        const string baseURL = "https://unitybackend20230212174016.azurewebsites.net/";
+        const string baseURL = "https://authstoreapi.azurewebsites.net/api/";
 
         [FunctionName("Auth")]
         public static async Task<User> Auth([ActivityTrigger] string loginData, ILogger log) {
             log.LogWarning($"Trying to Authenticate");
 
-            var loginInfo = JsonConvert.DeserializeObject<Login>(loginData);
-            var name = loginInfo.Username;
-            var password = loginInfo.Password;
-            var email = loginInfo.Email;
-
             var httpClient = new HttpClient();
-            var requestContent = new FormUrlEncodedContent(new Dictionary<string, string>{
-                {"grant_type", "password"},
-                {"username", name},
-                {"password", password},
-            });
+            var content = new StringContent(loginData, System.Text.Encoding.UTF8, "application/json");
 
-            var response = await httpClient.PostAsync(baseURL + "token", requestContent);
+            var response = await httpClient.PostAsync(baseURL + "Account/Token", content);
             if (!response.IsSuccessStatusCode) {
-                log.LogWarning($"Authentication failed: {response.Content}");
+                log.LogWarning($"Authentication failed: {response.Content.ReadAsStream()}");
                 return null;
             }
-            var outputJson = await response.Content.ReadAsStringAsync();
-            AccessToken accessToken = JsonConvert.DeserializeObject<AccessToken>(outputJson);
+            var accessToken = await response.Content.ReadAsStringAsync();
 
-            string requestUri = baseURL + $"api/UserProfile/AllInfo?email={email}";
+            string requestUri = baseURL + "Student";
             HttpRequestMessage getInfoRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            getInfoRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken.access_token);
+            getInfoRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
             HttpResponseMessage getInfoResponseMessage = await httpClient.SendAsync(getInfoRequestMessage);
 
             return await getUserObject(getInfoResponseMessage, log);
         }
 
-        public static async Task<User> getUserObject(HttpResponseMessage getInfoResponseMessage, ILogger log) {
+        public static async Task<User?> getUserObject(HttpResponseMessage getInfoResponseMessage, ILogger log) {
 
             string jsonUserData;
             if (getInfoResponseMessage.IsSuccessStatusCode) {

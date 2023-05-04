@@ -32,7 +32,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
             }
 
             //check content list is not empty
-            if (input.data == null || input.data.content.Count <= 0) {
+            if (input.data == null || input.data.Chapters.Count <= 0) {
                 log.LogWarning($"Container Cient: {input.container} - ContentList is null or empty.");
                 return false;
             }
@@ -49,17 +49,17 @@ namespace UnityBackendCoreFunctionApp.Functions {
 #else
             //connects to Storage Account via Managed Identity
             blobServiceClient = new BlobServiceClient(
-                new Uri("https://unityaddressablestorage.blob.core.windows.net/"),
+                new Uri("https://pancakestorageaccount.blob.core.windows.net/"),
                 new DefaultAzureCredential());
 #endif
 
-            var storageClient = blobServiceClient.GetBlobContainerClient("content-storage-blob");
+            var storageClient = blobServiceClient.GetBlobContainerClient("content-storage");
 
             var userGlobalMeta = JsonConvert.SerializeObject(input.data);
             try {
                 var userContainerClient = blobServiceClient.GetBlobContainerClient(input.container);
-                foreach (string contentName in input.data.content) {
-                    var outputBlobs = await SearchBlobsByRegexAsync(storageClient, $".*{contentName}.*");
+                foreach (string chapterName in input.data.Chapters) {
+                    var outputBlobs = await SearchBlobsByRegexAsync(storageClient, $".*{chapterName}.*");
                     foreach (var blob in outputBlobs) {
                         log.LogWarning($"Blobs Selected: {blob.Name}");
                         var blobClient = storageClient.GetBlobClient(blob.Name);

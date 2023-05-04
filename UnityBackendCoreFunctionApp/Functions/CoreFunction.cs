@@ -31,12 +31,12 @@ public static class CoreFunction {
         try {
             if (userData != null) {
                 Result result = new Result();
-                var storageInitResult = await context.CallActivityWithRetryAsync<string>("StorageInit", retryOptions, userData.Email);
+                var storageInitResult = await context.CallActivityWithRetryAsync<string>("StorageInit", retryOptions, userData.StudentUID);
                 var contentMatchResult = await context.CallActivityAsync<ContentData>("ContentMatcher", userData);
 
                 result.location = storageInitResult;
                 result.data = contentMatchResult;
-                log.LogWarning($"Core: Authenticated -- {userData.Email}");
+                log.LogWarning($"Core: Authenticated -- {userData.Name}");
 
                 var init_match_results = new List<Task<bool>> {
                     storageInitResult != null
@@ -60,7 +60,7 @@ public static class CoreFunction {
                         result.state = "Copy Failed";
                     }
                 }
-                log.LogWarning($"Core Executed Successfully -- ({userData.Email})");
+                log.LogWarning($"Core Executed Successfully -- ({userData.Name}), ({userData.StudentUID})");
                 return JsonConvert.SerializeObject(result);
             }
             return new BadRequestObjectResult($"User could not be authenticated.").ToString();

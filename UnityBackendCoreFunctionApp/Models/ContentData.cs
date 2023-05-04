@@ -1,18 +1,25 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace UnityBackendCoreFunctionApp.Models;
 [Serializable]
 public class ContentData {
-    public string id { get; set; }
-    public string batch { get; set; }
-    public string grade { get; set; }
-    public string school { get; set; }
-    public List<string> subjects { get; set; }
-    public List<string> chapters { get; set; }
-    public List<string> content { get; set; }
+    [JsonProperty(PropertyName = "id")]
+    public string Id { get; set; }
 
+    [JsonProperty(PropertyName = "department")]
+    public string Department { get; set; }
+
+    [JsonProperty(PropertyName = "school")]
+    public string School { get; set; }
+
+    [JsonProperty(PropertyName = "subjects")]
+    public List<string> Subjects { get; set; }
+
+    [JsonProperty(PropertyName = "chapters")]
+    public List<string> Chapters { get; set; }
 }
 
 
