@@ -20,6 +20,9 @@ public class ContentData {
 
     [JsonProperty(PropertyName = "chapters")]
     public List<string> Chapters { get; set; }
+
+    [JsonProperty(PropertyName = "content")]
+    public List<string> Content { get; set; }
 }
 
 

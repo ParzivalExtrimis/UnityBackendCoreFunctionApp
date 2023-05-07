@@ -31,6 +31,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
             blobServiceClient = new BlobServiceClient(connectionString);
 
 #else
+
             //connects to Storage Account via Managed Identity
             blobServiceClient = new BlobServiceClient(
                 new Uri("https://pancakestorageaccount.blob.core.windows.net/"),

@@ -18,7 +18,7 @@ namespace UnityBackendCoreFunctionApp.Functions {
         const string baseURL = "https://authstoreapi.azurewebsites.net/api/";
 
         [FunctionName("Auth")]
-        public static async Task<User> Auth([ActivityTrigger] string loginData, ILogger log) {
+        public static async Task<User?> Auth([ActivityTrigger] string loginData, ILogger log) {
             log.LogWarning($"Trying to Authenticate");
 
             var httpClient = new HttpClient();
@@ -32,19 +32,19 @@ namespace UnityBackendCoreFunctionApp.Functions {
             var accessToken = await response.Content.ReadAsStringAsync();
 
             string requestUri = baseURL + "Student";
-            HttpRequestMessage getInfoRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
+            var getInfoRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
             getInfoRequestMessage.Headers.Authorization = new AuthenticationHeaderValue("bearer", accessToken);
             HttpResponseMessage getInfoResponseMessage = await httpClient.SendAsync(getInfoRequestMessage);
 
-            return await getUserObject(getInfoResponseMessage, log);
+            return await GetUserObject(getInfoResponseMessage, log);
         }
 
-        public static async Task<User?> getUserObject(HttpResponseMessage getInfoResponseMessage, ILogger log) {
+        public static async Task<User?> GetUserObject(HttpResponseMessage getInfoResponseMessage, ILogger log) {
 
             string jsonUserData;
             if (getInfoResponseMessage.IsSuccessStatusCode) {
                 string getInfoResponseContent = await getInfoResponseMessage.Content.ReadAsStringAsync();
-                log.LogWarning($"Get info response: {getInfoResponseContent.Substring(0, 30)}");
+                log.LogWarning($"Get info response: {getInfoResponseContent[..30]}");
                 jsonUserData = getInfoResponseContent;
             }
             else {

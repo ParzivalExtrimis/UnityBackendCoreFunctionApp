@@ -30,7 +30,7 @@ public static class CoreFunction {
 
         try {
             if (userData != null) {
-                Result result = new Result();
+                var result = new Result();
                 var storageInitResult = await context.CallActivityWithRetryAsync<string>("StorageInit", retryOptions, userData.StudentUID);
                 var contentMatchResult = await context.CallActivityAsync<ContentData>("ContentMatcher", userData);
 

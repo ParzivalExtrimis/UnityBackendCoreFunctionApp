@@ -58,8 +58,8 @@ namespace UnityBackendCoreFunctionApp.Functions {
             var userGlobalMeta = JsonConvert.SerializeObject(input.data);
             try {
                 var userContainerClient = blobServiceClient.GetBlobContainerClient(input.container);
-                foreach (string chapterName in input.data.Chapters) {
-                    var outputBlobs = await SearchBlobsByRegexAsync(storageClient, $".*{chapterName}.*");
+                foreach (string contentName in input.data.Content) {
+                    var outputBlobs = await SearchBlobsByRegexAsync(storageClient, $".*{contentName}.*");
                     foreach (var blob in outputBlobs) {
                         log.LogWarning($"Blobs Selected: {blob.Name}");
                         var blobClient = storageClient.GetBlobClient(blob.Name);

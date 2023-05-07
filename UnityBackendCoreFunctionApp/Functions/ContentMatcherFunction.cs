@@ -24,19 +24,22 @@ public static class ContentMatcherFunction {
         log.LogWarning($"Content matching executed at: {DateTime.Now}");
 
         CosmosClient client;
+        var builder = new ConfigurationBuilder();
 #if DEBUG
-        var builder = new ConfigurationBuilder()
+            builder
            .SetBasePath(Environment.CurrentDirectory)
            .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
         var config = builder.Build();
         var connectionString = config.GetConnectionString("CosmosDBConnection");
         client = new CosmosClient(connectionString);
 
-#else
-            //connects to Storage Account via Managed Identity
-            client = new CosmosClient(
-                "https://pancakecosmosaccount.documents.azure.com/",
-                new DefaultAzureCredential());
+# else
+
+        //key vault connection - Cosmos
+        var configuration = builder.AddEnvironmentVariables().Build();
+        var connection = configuration["CosmosConnection"];
+        client = new CosmosClient(connection);
+
 #endif
 
         Database database = client.GetDatabase(id: "Catalog");
